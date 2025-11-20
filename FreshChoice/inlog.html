@@ -1,19 +1,27 @@
 <!DOCTYPE html>
+<html lang="nl">
 <head>
-    <title>Login page</title>
-    <link rel="stylesheet" href="/static/style.css">
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - FreshChoice</title>
+<link rel="stylesheet" href="static/style.css">
 </head>
 <body>
-    <h1>Login</h1>
+<header>
+    <h1>FreshChoice</h1>
+    <p>Log in om je account en boodschappenlijst te bekijken</p>
+</header>
 
-    <form id="LoginForm">
-        <input type = "text" id = "username" placeholder = "Gebruikersnaam" required><br>
-        <input type = "password" id = "password" placeholder = "Wachtwoord" required><br>
-        <button type="sumbit">Inloggen</button>
+<main>
+    <form id="LoginForm" method="POST" action="login.php">
+        <h2>Login</h2>
+
+        <input type="text" name="username" placeholder="Gebruikersnaam" required>
+        <input type="password" name="password" placeholder="Wachtwoord" required>
+
+        <button type="submit">Inloggen</button>
     </form>
-
-    <p id="error"> </p>
-
-    <script src="script.js"></script>
+</main>
 </body>
+</html>
+

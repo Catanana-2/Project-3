@@ -1,36 +1,38 @@
 <?php
-if(isset($_POST['submit'])) {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
-    $confirm_password = $_POST['confirmPassword'];
-    $first_name = $_POST['first_name'];
-    $last_name = $_POST['last_name'];
-    $city = $_POST['city'];
-    $adress = $_POST['adress'];
-    $zip_code = $_POST['zip_code'];
 
-}
-?>
+if ($_SERVER['REQUEST_METHOD'] === 'POST') 
+{
 
-<?php
+    $username   = htmlspecialchars($_POST['username']);
+    $password   = $_POST['password']; 
+    $confirm    = $_POST['confirmPassword'];
+    $first_name = htmlspecialchars($_POST['first_name']);
+    $last_name  = htmlspecialchars($_POST['last_name']);
+    $city       = htmlspecialchars($_POST['city']);
+    $adress     = htmlspecialchars($_POST['adress']);
+    $zip_code   = htmlspecialchars($_POST['zip_code']);
+    $captcha    = strtolower(trim($_POST['captcha']));
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-    $hash = password_hash($password, PASSWORD_BCRYPT);
-
-    $file = __DIR__ . '/users.json';
-
-    $users = [];
-    if (file_exists($file)) {
-        $users = json_decode(file_get_contents($file), true);
-    
+    if ($captcha !== 'kat') {
+        $error = urlencode("De naam van het dier is fout!! Probeer het opnieuw");
+        header("Location: register2.html?error=$error");
+        exit;
     }
 
-    $users[$username] = ['password_hash' => $hash];
+  
 
-    file_put_contents($file, json_encode($users, JSON_PRETTY_PRINT));
+    
+    if ($password !== $confirm) {
+        $error = urlencode("De wachtwoorden komen niet overeen!");
+        header("Location: register2.html?error=$error");
+        exit;
+    }
 
-    echo "Account aangemaakt voor $username. Wachtwoord is veilig gehasht";
+  
+    $hash = password_hash($password, PASSWORD_DEFAULT);
 
+   
+    header("Location: index.html");
+    exit;
 }
 ?>
