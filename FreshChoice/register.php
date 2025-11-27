@@ -5,6 +5,11 @@ $dbname = "i579631_test1";
 $username = "i579631_test1";
 $password = "nq7ZadSaD4Qjtw8fKBm";
 
+// $servername = "localhost";
+// $username = "root";
+// $password = "";
+// $dbname = "project_1";
+
 $conn = new mysqli($servername, $username, $password, $dbname);
 
 if ($conn->connect_error) {
@@ -42,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
   
     $hash = password_hash($password, PASSWORD_DEFAULT);
 
-    $sql = "INSERT INTO users (username, password, first_name, last_name, city, adress, zip_code);
+    $sql = "INSERT INTO users (username, password, first_name, last_name, city, adress, zip_code)
             VALUES (?, ?, ?, ?, ?, ?, ?)";
 
     $stmt = $conn->prepare($sql);
