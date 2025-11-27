@@ -179,6 +179,33 @@ footer p {
     color: #e6fdee;
 }
 
+/* --------------------------------- */
+/* LOGIN MELDINGEN & TIMER */
+/* --------------------------------- */
+
+.message {
+    background-color: #FFE08A;
+    color: #8a5c00;
+    padding: 12px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    text-align: center;
+    font-weight: bold;
+    border: 1px solid #E0C15A;
+}
+
+#timer {
+    color: red;
+    font-size: 1rem;
+    text-align: center;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.message.block{
+    color: red;
+}
+
 
 
 

@@ -1,14 +1,14 @@
 <?php
 
-$servername = "p-studmysql02.fontysict.net";
-$dbname = "i579631_test1";
-$username = "i579631_test1";
-$password = "nq7ZadSaD4Qjtw8fKBm";
+// $servername = "p-studmysql02.fontysict.net";
+// $dbname = "i579631_test1";
+// $username = "i579631_test1";
+// $password = "nq7ZadSaD4Qjtw8fKBm";
 
-// $servername = "localhost";
-// $username = "root";
-// $password = "";
-// $dbname = "project_1";
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "project_1";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 

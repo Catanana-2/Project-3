@@ -13,29 +13,26 @@
 </header>
 
 <main>
-    <form id="LoginForm" method="POST" action="login.php">
+    <form method="POST" action="login.php">
         <h2>Login</h2>
+
+        <?php if (isset($_GET["msg"])): ?>
+            <div class="message"><?= htmlspecialchars($_GET["msg"]); ?></div>
+        <?php endif; ?>
 
         <input type="text" name="username" placeholder="Gebruikersnaam" required>
         <input type="password" name="password" placeholder="Wachtwoord" required>
 
         <button type="submit">Inloggen</button>
-    </form>
 
-    <div id="timer" style="color:red; font-weight:bold; margin-top:20px;"></div>
+        <div id="timer"></div>
+    </form>
 </main>
 
 <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const error = urlParams.get('error');
-    const lockout = urlParams.get('lockout');
-
-    if (error) {
-        alert(decodeURIComponent(error));
-    }
-
-    if (lockout) {
-        let remaining = parseInt(lockout);
+    const lockout = parseInt(new URLSearchParams(window.location.search).get("lockout"));
+    if (lockout > 0) {
+        let remaining = lockout;
         const timerDiv = document.getElementById('timer');
 
         const interval = setInterval(() => {
@@ -43,13 +40,17 @@
                 timerDiv.textContent = "";
                 clearInterval(interval);
             } else {
-                timerDiv.textContent = "Je bent tijdelijk geblokkeerd. Probeer opnieuw over " + remaining + " seconden.";
+                timerDiv.textContent = "Je bent geblokkeerd. Probeer opnieuw over " + remaining + " seconden.";
                 remaining--;
             }
         }, 1000);
     }
 </script>
+
 </body>
 </html>
+
+
+
 
 

@@ -1,91 +1,88 @@
 <?php
 session_start();
 
-$servername = "p-studmysql02.fontysict.net";
-$dbname = "i579631_test1";
-$username_db = "i579631_test1";
-$password_db = "nq7ZadSaD4Qjtw8fKBm";
+// DATABASE INSTELLINGEN
+$servername = "localhost";
+$username   = "root";
+$password   = "";
+$dbname     = "project_1";
 
-// $servername = "localhost";
-// $username = "root";
-// $password = "";
-// $dbname = "project_1";
+// LOGIN BEVEILIGING
+$max_attempts    = 5;     // totaalpogingen
+$lockout_seconds = 120;   // blokkade tijd in seconden
 
-// Loginbeperkingen
-$max_attempts = 5;
-$lockout_seconds = 120;
+// Zet default waarden als ze nog niet bestaan
+if (!isset($_SESSION['wrong_attempts'])) $_SESSION['wrong_attempts'] = 0;
+if (!isset($_SESSION['lockout_time'])) $_SESSION['lockout_time'] = 0;
 
-// Forceer arrays voor pogingen en lockouts
-if (!isset($_SESSION['wrong_attempts']) || !is_array($_SESSION['wrong_attempts'])) {
-    $_SESSION['wrong_attempts'] = [];
+// ========== LOCKOUT CHECK ==========
+// zolang lockout actief is, geen nieuwe pogingen verwerken
+if (time() < $_SESSION['lockout_time']) {
+    $remaining = $_SESSION['lockout_time'] - time();
+    header("Location: inlog.html?msg=" . urlencode("⚠️ Je bent tijdelijk geblokkeerd!") . "&lockout=$remaining");
+    exit;
 }
-if (!isset($_SESSION['lockout_time']) || !is_array($_SESSION['lockout_time'])) {
-    $_SESSION['lockout_time'] = [];
-}
 
-// 1. Verbind met de database
+// VERBINDING MET DATABASE
 $conn = new mysqli($servername, $username, $password, $dbname);
-if ($conn->connect_error) {
-    die("Database verbinding mislukt: " . $conn->connect_error);
-}
+if ($conn->connect_error) die("Database verbinding mislukt: " . $conn->connect_error);
 
-// 2. Verwerk login formulier
+// VERWERK POST LOGIN
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username']);
     $password = $_POST['password'];
 
-    // Check of de gebruiker tijdelijk geblokkeerd is
-    if (isset($_SESSION['lockout_time'][$username]) && time() < $_SESSION['lockout_time'][$username]) {
-        $remaining = $_SESSION['lockout_time'][$username] - time();
-        header("Location: inlog.html?error=" . urlencode("Je bent tijdelijk geblokkeerd!") . "&lockout=$remaining");
-        exit;
-    }
-
-    // Haal gebruiker uit de database
-    $sql = "SELECT * FROM users WHERE username = ?";
-    $stmt = $conn->prepare($sql);
+    // FETCH USER UIT DATABASE
+    $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
     $stmt->bind_param("s", $username);
     $stmt->execute();
     $result = $stmt->get_result();
 
+    $login_success = false;
+
     if ($result->num_rows === 1) {
         $user = $result->fetch_assoc();
-
-        // Wachtwoord verifiëren
         if (password_verify($password, $user['password'])) {
-            // Correct ingelogd
-            $_SESSION['wrong_attempts'][$username] = 0;
-            $_SESSION['lockout_time'][$username] = 0;
+            $login_success = true;
+        }
+    }
 
-            $_SESSION['username'] = $user['username'];
-            $_SESSION['first_name'] = $user['first_name'];
+    if ($login_success) {
+        // SUCCESS → reset pogingen en lockout
+        $_SESSION['wrong_attempts'] = 0;
+        $_SESSION['lockout_time']   = 0;
+        $_SESSION['username']       = $user['username'];
+        $_SESSION['first_name']     = $user['first_name'];
 
-            header("Location: index.html");
+        header("Location: index.html");
+        exit;
+    } else {
+        // FOUT → verhoog totaalpogingen
+        $_SESSION['wrong_attempts']++;
+
+        if ($_SESSION['wrong_attempts'] >= $max_attempts) {
+            // MAX bereikt → blokkeer
+            $_SESSION['lockout_time'] = time() + $lockout_seconds;
+            $remaining = $lockout_seconds;
+            $_SESSION['wrong_attempts'] = 0; // reset teller na lockout
+
+            header("Location: inlog.html?msg=" . urlencode("⚠️ Te vaak fout ingelogd! Je bent $remaining seconden geblokkeerd.") . "&lockout=$remaining");
             exit;
         } else {
-            // Fout wachtwoord
-            if (!isset($_SESSION['wrong_attempts'][$username])) {
-                $_SESSION['wrong_attempts'][$username] = 0;
-            }
-            $_SESSION['wrong_attempts'][$username]++;
-
-            if ($_SESSION['wrong_attempts'][$username] >= $max_attempts) {
-                $_SESSION['lockout_time'][$username] = time() + $lockout_seconds;
-                $remaining = $lockout_seconds;
-                header("Location: inlog.html?error=" . urlencode("Te vaak fout ingelogd!") . "&lockout=$remaining");
-                exit;
-            } else {
-                $remaining_attempts = $max_attempts - $_SESSION['wrong_attempts'][$username];
-                header("Location: inlog.html?error=" . urlencode("Fout wachtwoord! Nog $remaining_attempts pogingen."));
-                exit;
-            }
+            $remaining_attempts = $max_attempts - $_SESSION['wrong_attempts'];
+            $msg = $result->num_rows === 1 ? "Fout wachtwoord!" : "Gebruiker niet gevonden!";
+            header("Location: inlog.html?msg=" . urlencode("$msg Pogingen over: $remaining_attempts"));
+            exit;
         }
-    } else {
-        // Gebruiker bestaat niet
-        header("Location: inlog.html?error=" . urlencode("Gebruiker niet gevonden!"));
-        exit;
     }
 }
 
 $conn->close();
 ?>
+
+
+
+
+
+
+
