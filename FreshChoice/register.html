@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<head>
+    <title>Create an account</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>Create an account</h1>
+
+    <form id="RegisterForm" method = "POST" action="password_hash.php">
+        <input type="text" id="username" placeholder="Gebruikersnaam" required><br>
+        <input type="password" id="password" placeholder="Wachtwoord" required><br>
+        <p>*Gebruik minimaal 8 tekens, met hoofdletters, cijfers en symbolen</p>
+        <input type="password" id="confirmPassword" placeholder="Wachtwoord bevestigen" required><br>
+        
+        <input type="text" name="first_name" placeholder="Voornaam" required><br>
+        <input type="text" name="last_name" placeholder="Achternaam" required><br>
+        <input type="text" name="city" placeholder="Woonplaats" required><br>
+        <input type="text" name="adress" placeholder="Adres" required><br>
+        <input type="text" name="zip_code" placeholder="Postcode" required><br>
+        <button type="sumbit" name="submit">Maak je account aan!</button>
+    </form>
+
+    <p id="error"></p>
+
+    <script src="script.js"></script>
+</body>

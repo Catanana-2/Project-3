@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Boodschappenlijst - FreshChoice</title>
+<link rel="stylesheet" href="static/style.css">
+<style>
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f5f5f5;
+        margin: 0;
+        padding: 0;
+    }
+
+    header {
+        background-color: #6FB23E;
+        padding: 20px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    main {
+        display: flex;
+        flex-wrap: wrap;
+        max-width: 1200px;
+        margin: 0 auto;
+        gap: 20px;
+        padding: 0 20px 40px;
+    }
+
+    section.products {
+        flex: 2;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+    }
+
+    section.products .product-card {
+        background-color: #fff;
+        border-radius: 10px;
+        padding: 15px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    section.products .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.12);
+    }
+
+    section.products input[type="checkbox"] {
+        margin-bottom: 10px;
+    }
+
+    aside.cart {
+        flex: 1;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        min-width: 250px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        height: fit-content;
+    }
+
+    aside.cart h2 {
+        margin-bottom: 15px;
+        font-size: 1.25rem;
+        color: #333;
+    }
+
+    aside.cart ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    aside.cart ul li {
+        padding: 8px 0;
+        border-bottom: 1px solid #eee;
+        color: #555;
+    }
+
+    aside.cart ul li:last-child {
+        border-bottom: none;
+    }
+
+    @media (max-width: 768px) {
+        main {
+            flex-direction: column;
+        }
+    }
+
+    .header-winkelwagen{
+        display: flex;
+        flex-direction: column;
+        
+    }
+
+    .home {
+    display: flex;
+    justify-content: flex-start;
+    background-color: white; /* groene kleur */
+    color: black;
+    padding: 10px;
+    width: 70px;
+    border-radius: 8px; /* afgeronde hoeken */
+    font-weight: bold;
+    transition: background-color 0.3s;
+    text-align: center;
+    }
+
+    .streep{
+    text-decoration: none;
+    }
+
+    .home:hover {
+    background-color: darkgray; /* donkerder groen bij hover */
+    }
+
+    
+</style>
+</head>
+<body>
+
+<div class="header-winkelwagen">
+<header>
+<div class="header-winkelwagen"></div>
+    <div class="home">
+        <a class="streep" href="index.html">Home</a>
+    </div>
+
+    <h1 class="logo">FreshChoice</h1>
+    <p>Beheer je boodschappenlijst online</p>
+
+</div>
+</header>
+
+
+
+<main>
+    <!-- Producten -->
+    <section class="products">
+        <div class="product-card">
+            <input type="checkbox" id="item1" data-name="Appels">
+            <label for="item1">Appels</label>
+        </div>
+        <div class="product-card">
+            <input type="checkbox" id="item2" data-name="Bananen">
+            <label for="item2">Bananen</label>
+        </div>
+        <div class="product-card">
+            <input type="checkbox" id="item3" data-name="Brood">
+            <label for="item3">Brood</label>
+        </div>
+        <div class="product-card">
+            <input type="checkbox" id="item4" data-name="Melk">
+            <label for="item4">Melk</label>
+        </div>
+        <div class="product-card">
+            <input type="checkbox" id="item5" data-name="Eieren">
+            <label for="item5">Eieren</label>
+        </div>
+        <div class="product-card">
+            <input type="checkbox" id="item6" data-name="Kaas">
+            <label for="item6">Kaas</label>
+        </div>
+    </section>
+
+    <!-- Winkelmandje -->
+    <aside class="cart">
+        <h2>Winkelmandje</h2>
+        <ul id="cartList">
+            <li class="placeholder">Nog geen items geselecteerd</li>
+        </ul>
+    </aside>
+</main>
+
+<script>
+const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+const cartList = document.getElementById('cartList');
+
+function updateCart() {
+    const selected = Array.from(checkboxes)
+        .filter(cb => cb.checked)
+        .map(cb => cb.dataset.name);
+
+    cartList.innerHTML = '';
+    if (selected.length === 0) {
+        cartList.innerHTML = '<li class="placeholder">Nog geen items geselecteerd</li>';
+    } else {
+        selected.forEach(item => {
+            const li = document.createElement('li');
+            li.textContent = item;
+            cartList.appendChild(li);
+        });
+    }
+}
+
+checkboxes.forEach(cb => cb.addEventListener('change', updateCart));
+</script>
+
+</body>
+</html>
+
