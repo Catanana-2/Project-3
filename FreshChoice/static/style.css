@@ -92,6 +92,29 @@ form p {
 }
 
 /* --------------------------------- */
+/* REGISTREREN KNOP CENTRAAL */
+/* --------------------------------- */
+.register-btn {
+    display: block;           /* Zorgt dat de knop als blok staat */
+    width: 200px;             /* Fijne vaste breedte */
+    margin: 20px auto 0;      /* Centered horizontaal met topmarge */
+    padding: 12px;
+    background-color: #7AC943; /* Groen */
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    border: none;             /* Geen lijn */
+    border-radius: 5px;
+    text-decoration: none;    /* Geen onderlijning */
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.register-btn:hover {
+    background-color: #6FB23E; /* Iets donkerder groen bij hover */
+}
+
+/* --------------------------------- */
 /* PRODUCTEN / DASHBOARD STIJL */
 /* --------------------------------- */
 .products-container, .dashboard-container {
@@ -182,7 +205,6 @@ footer p {
 /* --------------------------------- */
 /* LOGIN MELDINGEN & TIMER */
 /* --------------------------------- */
-
 .message {
     background-color: #FFE08A;
     color: #8a5c00;
@@ -205,6 +227,8 @@ footer p {
 .message.block{
     color: red;
 }
+
+
 
 
 

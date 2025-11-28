@@ -12,13 +12,44 @@
     <h1>FreshChoice</h1>
     <p>Maak een account aan om je boodschappenlijst te beheren</p>
     </div>
+    <div class="home">
+    <a href="index.html">Home</a>
+    </div>
 </header>
+
+<style>
+    header {
+        background-color: #6FB23E;
+    }
+
+    .home a {
+    display: flex;
+    justify-content: flex-start;
+    background-color: white; 
+    color: black;
+    padding: 10px;
+    width: 70px;
+    border-radius: 8px; /* afgeronde hoeken */
+    font-weight: bold;
+    transition: background-color 0.3s;
+    text-align: center;
+    text-decoration: none;
+    margin-left: 10px;
+    }
+
+    .home a:hover {
+    background-color: darkgray; 
+    }
+</style>
+
+
+
 
 <main>
     <form id="RegisterForm" method="POST" action="register.php">
         <h2>Maak je account aan</h2>
         
-        <input type="text" name="username" placeholder="Gebruikersnaam" required>
+        <input type="email" name="email" placeholder="E-mail" required>
         <input type="password" name="password" placeholder="Wachtwoord" required>
         <input type="password" name="confirmPassword" placeholder="Wachtwoord bevestigen" required>
 
@@ -28,11 +59,10 @@
         <input type="text" name="adress" placeholder="Adres" required>
         <input type="text" name="zip_code" placeholder="Postcode" required>
 
-        <h5>Vul deze CAPTCHA in om te bewijzen dat je geen robot bent.</h5>
-        <label for="captcha">Typ de naam van dit dier: 🐱</label>
-        <input type="text" name="captcha" placeholder="Wat zie je hier?" required>
 
         <button type="submit" name="submit">Maak je account aan!</button>
+
+        <a href="inlog.html">Al een account? Log hier in!</a>
     </form>
 </main>
 
@@ -51,11 +81,7 @@ form.addEventListener('submit', function(event) {
         return;
     }
 
-    if (captcha !== 'kat') {
-    alert("De naam van het dier is fout!! Probeer het opnieuw");
-    event.preventDefault();
-    return;
-    }
+
 });
 
 

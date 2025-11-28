@@ -1,11 +1,16 @@
 <?php
 session_start();
 
+$servername = "p-studmysql02.fontysict.net";
+$dbname = "i579631_test1";
+$username = "i579631_test1";
+$password = "nq7ZadSaD4Qjtw8fKBm";
+
 // DATABASE INSTELLINGEN
-$servername = "localhost";
-$username   = "root";
-$password   = "";
-$dbname     = "project_1";
+// $servername = "localhost";
+// $username   = "root";
+// $password   = "";
+// $dbname     = "project_1";
 
 // LOGIN BEVEILIGING
 $max_attempts    = 5;     // totaalpogingen
@@ -29,12 +34,12 @@ if ($conn->connect_error) die("Database verbinding mislukt: " . $conn->connect_e
 
 // VERWERK POST LOGIN
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = trim($_POST['username']);
+    $email = trim($_POST['email']);
     $password = $_POST['password'];
 
     // FETCH USER UIT DATABASE
-    $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
-    $stmt->bind_param("s", $username);
+    $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
+    $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
 
@@ -51,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // SUCCESS → reset pogingen en lockout
         $_SESSION['wrong_attempts'] = 0;
         $_SESSION['lockout_time']   = 0;
-        $_SESSION['username']       = $user['username'];
+        $_SESSION['email']       = $user['email'];
         $_SESSION['first_name']     = $user['first_name'];
 
         header("Location: index.html");

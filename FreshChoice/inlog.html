@@ -10,22 +10,59 @@
 <header>
     <h1>FreshChoice</h1>
     <p>Log in om je account en boodschappenlijst te bekijken</p>
+    <div class="home">
+    <a href="index.html">Home</a>
+    </div>
 </header>
+
+<style>
+
+    header {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    background-color: #6FB23E;
+    
+    }
+    .home a {
+    display: flex;
+    justify-content: flex-start;
+    background-color: white; 
+    color: black;
+    padding: 10px;
+    width: 70px;
+    border-radius: 8px; /* afgeronde hoeken */
+    font-weight: bold;
+    transition: background-color 0.3s;
+    text-align: center;
+    text-decoration: none;
+    margin-left: 10px;
+    }
+
+    .home a:hover {
+    background-color: darkgray; 
+    }
+
+    
+    
+</style>
 
 <main>
     <form method="POST" action="login.php">
         <h2>Login</h2>
 
-        <?php if (isset($_GET["msg"])): ?>
-            <div class="message"><?= htmlspecialchars($_GET["msg"]); ?></div>
-        <?php endif; ?>
+
 
         <input type="text" name="username" placeholder="Gebruikersnaam" required>
         <input type="password" name="password" placeholder="Wachtwoord" required>
 
         <button type="submit">Inloggen</button>
 
+    
+        
         <div id="timer"></div>
+
+        <a href="register2.html">Nog geen account? Registreer hier!</a>
     </form>
 </main>
 
@@ -49,6 +86,8 @@
 
 </body>
 </html>
+
+
 
 
 
