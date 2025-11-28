@@ -1,10 +1,20 @@
 <?php
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 session_start();
 
-$servername = "p-studmysql02.fontysict.net";
-$dbname = "i579631_test1";
-$username = "i579631_test1";
-$password = "nq7ZadSaD4Qjtw8fKBm";
+// $servername = "p-studmysql02.fontysict.net";
+// $dbname = "i579631_test1";
+// $username = "i579631_test1";
+// $password = "nq7ZadSaD4Qjtw8fKBm";
+
+$servername = "localhost";
+$username   = "root";
+$password   = "";
+$dbname     = "project_1";
 
 // Database verbinding
 $conn = new mysqli($servername, $username, $password, $dbname);
@@ -34,7 +44,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $hash = password_hash($password, PASSWORD_DEFAULT);
 
     // Genereer verification code
-    $verification_code = bin2hex(random_bytes(16));
+    $verification_code = bin2hex(openssl_random_pseudo_bytes(16));
+
 
     // Insert gebruiker in database
     $stmt = $conn->prepare("INSERT INTO users (email, password, first_name, last_name, city, adress, zip_code, is_verified, verification_code) VALUES (?, ?, ?, ?, ?, ?, ?, 0, ?)");
