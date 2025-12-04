@@ -3,10 +3,15 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-$servername = "p-studmysql02.fontysict.net"; 
-$username = "i579631_test1"; 
-$password = "nq7ZadSaD4Qjtw8fKBmU"; 
-$dbname = "i579631_test1";
+// $servername = "p-studmysql02.fontysict.net"; 
+// $username = "i579631_test1"; 
+// $password = "nq7ZadSaD4Qjtw8fKBmU"; 
+// $dbname = "i579631_test1";
+
+$servername = "localhost";
+$username   = "root";
+$password   = "";
+$dbname     = "project_1";
 
 $ProductID = $_POST['ProductID'] ?? null;
 $Checked = $_POST['Checked'] ?? null;
