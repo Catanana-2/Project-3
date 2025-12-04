@@ -144,27 +144,27 @@
     <!-- Producten -->
     <section class="products">
         <div class="product-card">
-            <input type="checkbox" id="item1" data-name="Appels">
+            <input type="checkbox" id="item1" data-name="Appels" data-id="6">
             <label for="item1">Appels</label>
         </div>
         <div class="product-card">
-            <input type="checkbox" id="item2" data-name="Bananen">
+            <input type="checkbox" id="item2" data-name="Bananen" data-id="2">
             <label for="item2">Bananen</label>
         </div>
         <div class="product-card">
-            <input type="checkbox" id="item3" data-name="Brood">
+            <input type="checkbox" id="item3" data-name="Brood" data-id="3">
             <label for="item3">Brood</label>
         </div>
         <div class="product-card">
-            <input type="checkbox" id="item4" data-name="Melk">
+            <input type="checkbox" id="item4" data-name="Melk" data-id="1">
             <label for="item4">Melk</label>
         </div>
         <div class="product-card">
-            <input type="checkbox" id="item5" data-name="Eieren">
+            <input type="checkbox" id="item5" data-name="Eieren" data-id="8">
             <label for="item5">Eieren</label>
         </div>
         <div class="product-card">
-            <input type="checkbox" id="item6" data-name="Kaas">
+            <input type="checkbox" id="item6" data-name="Kaas" data-id="9">
             <label for="item6">Kaas</label>
         </div>
     </section>
@@ -199,7 +199,25 @@ function updateCart() {
     }
 }
 
-checkboxes.forEach(cb => cb.addEventListener('change', updateCart));
+checkboxes.forEach(cb => {
+cb.addEventListener('change', () => {
+updateCart();
+
+const ProductID = cb.dataset.id;
+const Checked = cb.checked ? 1 : 0;
+
+fetch("update_shoppinglist.php", {
+method: "POST",
+headers: {
+"Content-Type": "application/x-www-form-urlencoded"
+},
+body: `ProductID=${encodeURIComponent(ProductID)}&Checked=${Checked}`
+})
+.then(r => r.text())
+.then(t => console.log("Server response:", t))
+.catch(err => console.error(err));
+});
+});
 </script>
 
 </body>
