@@ -93,80 +93,102 @@
         }
     }
 
-    .header-winkelwagen{
+    .header-winkelwagen {
         display: flex;
         flex-direction: column;
-        
     }
 
     .home {
-    display: flex;
-    justify-content: flex-start;
-    background-color: white; /* groene kleur */
-    color: black;
-    padding: 10px;
-    width: 70px;
-    border-radius: 8px; /* afgeronde hoeken */
-    font-weight: bold;
-    transition: background-color 0.3s;
-    text-align: center;
+        display: flex;
+        justify-content: flex-start;
+        background-color: white;
+        color: black;
+        padding: 10px;
+        width: 70px;
+        border-radius: 8px;
+        font-weight: bold;
+        transition: background-color 0.3s;
+        text-align: center;
     }
 
-    .streep{
-    text-decoration: none;
+    .streep {
+        text-decoration: none;
     }
 
     .home:hover {
-    background-color: darkgray; /* donkerder groen bij hover */
+        background-color: darkgray;
     }
 
-    
+    .suggested-header {
+    text-align: center;
+    width: 100%;
+    }
+
+    .suggested-items {
+        display: flex;
+        justify-content: center;
+        flex-direction: row;
+        gap: 30px;
+    }
+
+    .category {
+        display: flex;
+        flex-direction: column;
+    }
 </style>
 </head>
+
 <body>
 
 <div class="header-winkelwagen">
 <header>
-<div class="header-winkelwagen"></div>
+    <div class="header-winkelwagen"></div>
     <div class="home">
         <a class="streep" href="index.html">Home</a>
     </div>
 
     <h1 class="logo">FreshChoice</h1>
     <p>Beheer je boodschappenlijst online</p>
-
-</div>
 </header>
+</div>
 
+<div>
+    <h2 class="suggested-header">Voorgestelde producten</h2>
+     <section class="suggested-items" id="suggested-items">
 
-
+     </section>
+</div>
 <main>
-    <!-- Producten -->
-    <section class="products">
-        <div class="product-card">
-            <input type="checkbox" id="item1" data-name="Appels">
+    <section class="products" id="products">
+        <!-- <div class="product-card">
+            <input type="checkbox" id="item1" data-name="Appels" data-id="6">
             <label for="item1">Appels</label>
         </div>
+
         <div class="product-card">
-            <input type="checkbox" id="item2" data-name="Bananen">
+            <input type="checkbox" id="item2" data-name="Bananen" data-id="2">
             <label for="item2">Bananen</label>
         </div>
+
         <div class="product-card">
-            <input type="checkbox" id="item3" data-name="Brood">
+            <input type="checkbox" id="item3" data-name="Brood" data-id="3">
             <label for="item3">Brood</label>
         </div>
+
         <div class="product-card">
-            <input type="checkbox" id="item4" data-name="Melk">
+            <input type="checkbox" id="item4" data-name="Melk" data-id="1">
             <label for="item4">Melk</label>
         </div>
+
         <div class="product-card">
-            <input type="checkbox" id="item5" data-name="Eieren">
+            <input type="checkbox" id="item5" data-name="Eieren" data-id="8">
             <label for="item5">Eieren</label>
         </div>
+
         <div class="product-card">
-            <input type="checkbox" id="item6" data-name="Kaas">
+            <input type="checkbox" id="item6" data-name="Kaas" data-id="9">
             <label for="item6">Kaas</label>
-        </div>
+        </div> -->
     </section>
 
     <!-- Winkelmandje -->
@@ -179,29 +201,97 @@
 </main>
 
 <script>
-const checkboxes = document.querySelectorAll('input[type="checkbox"]');
 const cartList = document.getElementById('cartList');
+const productsContainer = document.getElementById('products');
 
+/* Updates the cart based on all current checkboxes */
 function updateCart() {
+    const checkboxes = document.querySelectorAll('#products input[type="checkbox"]');
+
     const selected = Array.from(checkboxes)
         .filter(cb => cb.checked)
         .map(cb => cb.dataset.name);
 
     cartList.innerHTML = '';
+
     if (selected.length === 0) {
         cartList.innerHTML = '<li class="placeholder">Nog geen items geselecteerd</li>';
-    } else {
-        selected.forEach(item => {
-            const li = document.createElement('li');
-            li.textContent = item;
-            cartList.appendChild(li);
-        });
+        return;
     }
+
+    selected.forEach(item => {
+        const li = document.createElement('li');
+        li.textContent = item;
+        cartList.appendChild(li);
+    });
 }
 
-checkboxes.forEach(cb => cb.addEventListener('change', updateCart));
+/* Handles checkbox changes for static & dynamic items */
+productsContainer.addEventListener('change', function(e) {
+    if (e.target.matches('input[type="checkbox"]')) {
+        const cb = e.target;
+
+        updateCart();
+
+        const ProductID = cb.dataset.id;
+        const Checked = cb.checked ? 1 : 0;
+
+        fetch("update_shoppinglist.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: `ProductID=${encodeURIComponent(ProductID)}&Checked=${Checked}`
+        })
+        .then(r => r.text())
+        .then(t => console.log("Server response:", t))
+        .catch(err => console.error(err));
+    }
+});
+
+fetch('SuggestedItems.php')
+    .then(r => r.json())
+    .then(data => {
+        const list = document.getElementById('suggested-items');
+
+        Object.keys(data).forEach(category => {
+            const div = document.createElement('div');
+            div.className = 'category'
+            const heading = document.createElement('h3');
+            heading.textContent = category;
+            list.appendChild(div);
+            div.appendChild(heading);
+
+            data[category].forEach(product => {
+                const li = document.createElement('p');
+                li.textContent = `${product.ProductNaam} – €${product.Prijs}`;
+                div.appendChild(li);
+                
+            });
+        });
+    });
+
+fetch('Products.php')
+    .then(r => r.json())
+    .then(data => {
+        data.forEach((product, index) => {
+            const div = document.createElement('div');
+            div.className = 'product-card';
+
+            const input = document.createElement('input');
+            input.type = 'checkbox';
+            input.id = `item_dynamic_${index}`;
+            input.dataset.name = product.ProductNaam;
+            input.dataset.id = product.ProductID; 
+
+            const label = document.createElement('label');
+            label.htmlFor = input.id;
+            label.textContent = product.ProductNaam;
+
+            div.appendChild(input);
+            div.appendChild(label);
+            productsContainer.appendChild(div);
+        });
+    });
 </script>
 
 </body>
 </html>
-
