@@ -1,3 +1,4 @@
+
 <?php
 session_start();
 
@@ -12,23 +13,17 @@ $lockout_seconds = 120;
 if (!isset($_SESSION['wrong_attempts'])) $_SESSION['wrong_attempts'] = 0;
 if (!isset($_SESSION['lockout_time'])) $_SESSION['lockout_time'] = 0;
 
-// LOCKOUT CHECK
-if (time() < $_SESSION['lockout_time']) {
-    $remaining = $_SESSION['lockout_time'] - time();
-    header("Location: inlog.html?msg=" . urlencode("⚠️ Je bent tijdelijk geblokkeerd!") . "&lockout=$remaining");
-    exit;
-}
-
-// VERBINDING MET DATABASE
+// DATABASE VERBINDING
 $conn = new mysqli($servername, $username, $password, $dbname);
 if ($conn->connect_error) die("Database verbinding mislukt: " . $conn->connect_error);
 
-$login_error = "";
 $show_verify_button = false;
-$verification_code = "";
-$email_for_verify = "";
+$verification_code  = "";
+$email_for_verify   = "";
+$remaining = 0;
+$login_error = "";
 
-// Als er GET email/code is (van test link of na registratie)
+// CHECK VERIFICATIE BUTTON
 if (isset($_GET['email'])) {
     $email_for_verify = $_GET['email'];
     $stmt = $conn->prepare("SELECT is_verified, verification_code FROM users WHERE email = ?");
@@ -39,14 +34,21 @@ if (isset($_GET['email'])) {
         $user_verify = $result->fetch_assoc();
         if ($user_verify['is_verified'] == 0) {
             $show_verify_button = true;
-            $verification_code = $user_verify['verification_code'];
+            $verification_code  = $user_verify['verification_code'];
         }
     }
 }
 
-// POST LOGIN VERWERKING
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = trim($_POST['email']);
+// LOCKOUT CHECK
+if (time() < $_SESSION['lockout_time']) {
+    $remaining = $_SESSION['lockout_time'] - time();
+    $login_error = "⚠️ Je bent tijdelijk geblokkeerd! Nog <span id='countdown'>$remaining</span> seconden.";
+}
+
+// LOGIN VERWERKING
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && time() >= $_SESSION['lockout_time']) {
+
+    $email    = trim($_POST['email']);
     $password = $_POST['password'];
 
     $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
@@ -58,34 +60,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($result->num_rows === 1) {
         $user = $result->fetch_assoc();
+
         if ($user['is_verified'] == 0) {
-            $login_error = "⚠️ Je moet eerst je account verifiëren via de knop hier rechts.";
+            $login_error = "⚠️ Je moet eerst je account verifiëren.";
             $show_verify_button = true;
-            $verification_code = $user['verification_code'];
-            $email_for_verify = $email;
+            $verification_code  = $user['verification_code'];
+            $email_for_verify   = $email;
+
         } elseif (password_verify($password, $user['password'])) {
             $login_success = true;
         }
+
     } else {
         $login_error = "Gebruiker niet gevonden!";
     }
 
+    // SUCCESVOL INGLOGD
     if ($login_success) {
         $_SESSION['wrong_attempts'] = 0;
         $_SESSION['lockout_time']   = 0;
         $_SESSION['email']          = $user['email'];
         $_SESSION['first_name']     = $user['first_name'];
-
         header("Location: index.html");
         exit;
-    } else {
+    }
+
+    // MISLUKT INLOGGEN
+    if (!$login_success) {
         $_SESSION['wrong_attempts']++;
+
         if ($_SESSION['wrong_attempts'] >= $max_attempts) {
             $_SESSION['lockout_time'] = time() + $lockout_seconds;
             $_SESSION['wrong_attempts'] = 0;
-            $login_error = "⚠️ Te vaak fout ingelogd! Je bent $lockout_seconds seconden geblokkeerd.";
+            $remaining = $lockout_seconds;
+            $login_error = "⚠️ Te vaak fout ingelogd! Je bent $remaining seconden geblokkeerd.";
         } else {
-            if (!$login_error) $login_error = "Fout wachtwoord! Pogingen over: " . ($max_attempts - $_SESSION['wrong_attempts']);
+            if (!$login_error) {
+                $login_error = "Fout wachtwoord! Pogingen over: " . ($max_attempts - $_SESSION['wrong_attempts']);
+            }
         }
     }
 }
@@ -153,7 +165,7 @@ $conn->close();
 
         <button type="submit">Inloggen</button>
 
-        <?php if ($login_error) echo "<p style='color:red;'>$login_error</p>"; ?>
+        <?php if (!empty($login_error)) echo "<p style='color:red;'>$login_error</p>"; ?>
 
         <a href="register2.html">Nog geen account? Registreer hier!</a>
     </form>
@@ -162,8 +174,30 @@ $conn->close();
         <a href="verify.php?code=<?= $verification_code ?>&email=<?= urlencode($email_for_verify) ?>" class="verify-btn">Verifieer je account</a>
     <?php endif; ?>
 </main>
+
+<script>
+// Live aftellen van lockout
+let countdownEl = document.getElementById('countdown');
+if(countdownEl){
+    let seconds = parseInt(countdownEl.textContent);
+    let interval = setInterval(() => {
+        seconds--;
+        if(seconds <= 0){
+            clearInterval(interval);
+            countdownEl.textContent = "0";
+        } else {
+            countdownEl.textContent = seconds;
+        }
+    }, 1000);
+}
+</script>
 </body>
 </html>
+
+
+
+
+
 
 
 
