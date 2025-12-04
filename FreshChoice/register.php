@@ -62,12 +62,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Stuur email
         if (!mail($email, $subject, $message, $headers)) {
             $error = urlencode("Account aangemaakt, maar mail kon niet worden verzonden.");
-            header("Location: register2.html?error=$error");
+            // header("Location: register2.html?error=$error");
+            header("Location: login.php?code=".$verification_code."&email=".$email);
             exit;
         }
 
         // Redirect naar inlogpagina
-        header("Location: inlog.html?verify=1");
+        header("Location: login.php?code=".$verification_code."&email=".$email);
         exit;
 
     } else {
