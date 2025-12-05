@@ -421,6 +421,7 @@ main {
 </header>
 
 <main>
+    <p>Als je net een account hebt aangemaakt, moet je eerst verifiëren voordat je inlogt!!</p><br>
     <?php if ($remaining > 0): ?>
         <p style="color:red;">⚠️ Je bent tijdelijk geblokkeerd! Nog <span id="countdown"><?= $remaining ?></span> seconden.</p>
     <?php endif; ?>
